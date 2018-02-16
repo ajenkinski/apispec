@@ -458,22 +458,14 @@ def property2parameter(prop, name='body', required=False, multiple=False, locati
     ret = {
         'in': swagger_location,
         'name': name,
+        'required': required
     }
 
-    if swagger_location == 'body':
-        ret['required'] = False
-        ret['name'] = 'body'
-        ret['schema'] = {
-            'type': 'object',
-            'properties': {name: prop} if name else {},
-        }
-        if name and required:
-            ret['schema']['required'] = [name]
-    else:
-        ret['required'] = required
-        if multiple:
-            ret['collectionFormat'] = 'multi'
-        ret.update(prop)
+    ret.update(prop)
+
+    if swagger_location != 'body' and multiple:
+        ret['collectionFormat'] = 'multi'
+
     return ret
 
 
@@ -589,6 +581,7 @@ def get_ref_path(openapi_major_version):
                  3: 'components/schemas'}
     return ref_paths[openapi_major_version]
 
+
 __location_map__ = {
     'query': 'query',
     'querystring': 'query',
@@ -597,4 +590,8 @@ __location_map__ = {
     'cookies': 'cookie',
     'form': 'formData',
     'files': 'formData',
+    'body': 'body',
+    'path': 'path',
+    'header': 'header',
+    'formData': 'formData'
 }
